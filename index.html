@@ -1626,8 +1626,7 @@ tr.row-gstr_rcm:hover td {
 
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>
-
-<div class="app-container">
+<div class="app-container" id="mainAppContainer" style="display:none;">
 
   <!-- ═══ HEADER ═══ -->
   <header class="header" id="appHeader">
@@ -2007,6 +2006,18 @@ tr.row-gstr_rcm:hover td {
   </div>
 </div>
 
+<!-- Password Lock Screen Modal -->
+<div id="passwordModalOverlay" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--bg-primary); z-index:20000; display:flex; align-items:center; justify-content:center;">
+  <div style="background:var(--bg-card-solid); border:1px solid var(--border-primary); border-radius:var(--radius-lg); padding:30px; width:90%; max-width:400px; box-shadow:0 10px 40px rgba(0,0,0,0.3); text-align:center;">
+    <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
+    <h2 style="font-size:20px; font-weight:800; margin-bottom:8px;">GST Reco PRO Locked</h2>
+    <p style="font-size:13px; color:var(--text-secondary); margin-bottom:20px;">Please enter the password to access the tool.</p>
+    <input type="password" id="appPasswordInput" placeholder="Enter Password" style="width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1px solid var(--border-primary); background:var(--bg-input); color:var(--text-primary); font-family:var(--font-body); font-size:14px; outline:none; margin-bottom:12px; transition:all var(--transition-fast);" onkeydown="if(event.key === 'Enter') checkAppPassword()">
+    <div id="passwordError" style="color:var(--error); font-size:12px; margin-bottom:12px; display:none; font-weight:600;">Incorrect password. Please try again.</div>
+    <button onclick="checkAppPassword()" style="width:100%; padding:14px; border-radius:var(--radius-md); border:none; font-size:14px; font-weight:700; cursor:pointer; background:linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary)); color:#fff; font-family:var(--font-body); box-shadow:0 4px 15px rgba(37,99,235,0.2); transition:all var(--transition-med);">Unlock</button>
+  </div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════════════════════
    MILITARY-GRADE ANTI-INSPECT & CODE EXTRACTION PROTECTION
@@ -2166,9 +2177,26 @@ function saveUserName() {
   document.getElementById('userModalOverlay').style.display = 'none';
   updateGreeting();
 }
+function checkAppPassword() {
+  const pwd = document.getElementById('appPasswordInput').value;
+  if (pwd === 'Alpha@2026') {
+    sessionStorage.setItem('gstUnlocked', 'true');
+    document.getElementById('passwordModalOverlay').style.display = 'none';
+    document.getElementById('mainAppContainer').style.display = 'flex';
+    checkUserName();
+  } else {
+    document.getElementById('passwordError').style.display = 'block';
+  }
+}
 
 updateClock();
-checkUserName();
+if (sessionStorage.getItem('gstUnlocked') === 'true') {
+  const pwdModal = document.getElementById('passwordModalOverlay');
+  if (pwdModal) pwdModal.style.display = 'none';
+  const appCont = document.getElementById('mainAppContainer');
+  if (appCont) appCont.style.display = 'flex';
+  checkUserName();
+}
 setInterval(updateClock, 1000);
 
 function scrollToUpload() {
